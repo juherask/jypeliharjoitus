@@ -25,11 +25,13 @@ public abstract class Tarkistaja : PhysicsGame
     GameObject pacman;
     GameObject haamut;
     List<GameObject> kolikot;
+    TehtavanTila tila8;
 
     // Tehtävien tilatiedot
     List<GameObject> objektitEnnenTehtavaa = null;
     List<GameObject> talletetutObjektitTehtava4 = null;
     List<GameObject> talletetutObjektitTehtava5 = null;
+    List<GameObject> talletetutObjektitTehtava8 = null;
 
     public override void Begin()
     {
@@ -124,6 +126,14 @@ public abstract class Tarkistaja : PhysicsGame
                 break;
             case 10:
                 tulos = TarkistaTehtava10();
+
+                if (tulos == TehtavanTila.ToteutettuToimii)
+                {
+                    var voitto = new GameObject(Screen.Width, Screen.Height);
+                    voitto.Image = LoadImage("ikplus_diploma");
+                    Add(voitto, 3);
+                    //MediaPlayer.Play("fanfare2");
+                }
                 break;
             default:
                 tulos = TehtavanTila.ToteutettuToimii;
@@ -376,6 +386,8 @@ public abstract class Tarkistaja : PhysicsGame
                 tila = TehtavanTila.ToteutettuToimii;
                 objektitEnnenTehtavaa.Clear();
                 objektitEnnenTehtavaa = null;
+
+                Timer.SingleShot(0.1, TuhoaPallot);
             }
         }
         catch (NotImplementedException)
@@ -385,11 +397,21 @@ public abstract class Tarkistaja : PhysicsGame
         return tila;
     }
 
+    void TuhoaPallot()
+    {
+        for (int i = 0; i < talletetutObjektitTehtava5.Count; i++)
+        {
+            talletetutObjektitTehtava5[i].Destroy();
+        }
+    }
+
     private TehtavanTila TarkistaTehtava6()
     {
         TehtavanTila tila = TehtavanTila.EiToteutettu;
         try
         {
+            // TODO: Täydennä tarkastus
+            Tehtava6();
             tila = TehtavanTila.ToteutettuToimii;
         }
         catch (NotImplementedException)
@@ -436,26 +458,48 @@ public abstract class Tarkistaja : PhysicsGame
 
     void TarkistaPallojenMaara()
     {
-        string virhe = String.Format("joko tulee törmäyksiä {0}", talletetutObjektitTehtava5.Count);
+        List<GameObject> tormayksienJalkeen = GetObjects(go => go is PhysicsObject);
+
+        string virhe = String.Format("Miltä näyttää, joko tulee törmäyksiä? Pallojen määrä on {0}", tormayksienJalkeen.Count);
         MessageDisplay.Add(virhe);
+
+        //if (talletetutObjektitTehtava8.Count > tormayksienJalkeen.Count)
+        //{
+        //    tila8 = TehtavanTila.ToteutettuToimii;
+        //}
         //MessageDisplay.Add("joko tulee törmäyksiä");
     }
 
     private TehtavanTila TarkistaTehtava8()
     {
         TehtavanTila tila = TehtavanTila.EiToteutettu;
-        try
+        /*try
         {
-            PhysicsObject palloLiikkeella = null;
-            Tehtava8();
+            if (objektitEnnenTehtavaa == null)
+            {
+                //n = RandomGen.NextInt(100, 150);
+                // Precondition
+                objektitEnnenTehtavaa = GetObjects(go => go is PhysicsObject);
+                Tehtava8();
+                // Tehtavan kutsumisen jälkeen pitää antaa JyPelille aikaa tehdä työnsä.
+                //  tähän tarkistajaan tullaan siis myöhemmin uudelleen, mutta tätä haaraa ei enää tehdä.
+                tila = TehtavanTila.ToteutettuSaattaaToimia;
+                return tila;
+            }
 
+            List<GameObject> uudet = GetObjects(go => go is PhysicsObject && !objektitEnnenTehtavaa.Contains(go));
+            talletetutObjektitTehtava8 = uudet;
+            //PhysicsObject palloLiikkeella = null;
+            //Tehtava8();
+
+            tila = TehtavanTila.ToteutettuEiToimi;
             Timer ajastin = new Timer();
             ajastin.Interval = 2;
             ajastin.Timeout += TarkistaPallojenMaara;
-            ajastin.Start(10);
+            ajastin.Start(7);
 
-            tila = TehtavanTila.ToteutettuEiToimi;
-            if (talletetutObjektitTehtava4 != null)
+            tila = tila8;
+            /*if (talletetutObjektitTehtava4 != null)
             {
                 palloLiikkeella = talletetutObjektitTehtava4[0] as PhysicsObject;
             }
@@ -473,6 +517,20 @@ public abstract class Tarkistaja : PhysicsGame
             {
                 tila = TehtavanTila.ToteutettuToimii;
             }
+        }*/
+        try
+        {
+            // TODO: Täydennä tarkastus
+            Tehtava8();
+            tila = TehtavanTila.ToteutettuToimii;
+            /*if ( true )
+            {
+                tila = TehtavanTila.ToteutettuEiToimi;
+                Timer ajastin = new Timer();
+                ajastin.Interval = 2;
+                ajastin.Timeout += TarkistaPallojenMaara;
+                ajastin.Start(7);
+            }*/
         }
         catch (NotImplementedException)
         {
@@ -486,7 +544,9 @@ public abstract class Tarkistaja : PhysicsGame
         TehtavanTila tila = TehtavanTila.EiToteutettu;
         try
         {
-            //tila = TehtavanTila.ToteutettuToimii;
+            // TODO: Täydennä tarkastus
+            Tehtava9();
+            tila = TehtavanTila.ToteutettuToimii;
         }
         catch (NotImplementedException)
         {
@@ -500,7 +560,8 @@ public abstract class Tarkistaja : PhysicsGame
         TehtavanTila tila = TehtavanTila.EiToteutettu;
         try
         {
-            //tila = TehtavanTila.ToteutettuToimii;
+            Tehtava10();
+            tila = TehtavanTila.ToteutettuToimii;
         }
         catch (NotImplementedException)
         {
