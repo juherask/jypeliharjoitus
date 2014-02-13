@@ -21,12 +21,15 @@ public abstract class Tarkistaja : PhysicsGame
     int PACSPEED = 333;
     int TEHTAVIA = 10;
     int tehtava = 0;
+    int n = 0;
     GameObject pacman;
     GameObject haamut;
     List<GameObject> kolikot;
 
     // Tehtävien tilatiedot
-    List<GameObject> objektitEnnenTehtavaa3 = null;
+    List<GameObject> objektitEnnenTehtavaa = null;
+    List<GameObject> talletetutObjektitTehtava4 = null;
+    List<GameObject> talletetutObjektitTehtava5 = null;
 
     public override void Begin()
     {
@@ -102,25 +105,25 @@ public abstract class Tarkistaja : PhysicsGame
                 tulos = TarkistaTehtava3();
                 break;
             case 4:
-                //TODO: Aki/Jussi kirjoita tarkistakoodi
+                tulos = TarkistaTehtava4();
                 break;
             case 5:
-                //TODO: Aki/Jussi kirjoita tarkistakoodi
+                tulos = TarkistaTehtava5();
                 break;
             case 6:
-                //TODO: Aki/Jussi kirjoita tarkistakoodi
+                tulos = TarkistaTehtava6();
                 break;
             case 7:
-                //TODO: Aki/Jussi kirjoita tarkistakoodi
+                tulos = TarkistaTehtava7();
                 break;
             case 8:
-                //TODO: Aki/Jussi kirjoita tarkistakoodi
+                tulos = TarkistaTehtava8();
                 break;
             case 9:
-                //TODO: Aki/Jussi kirjoita tarkistakoodi
+                tulos = TarkistaTehtava9();
                 break;
             case 10:
-                //TODO: Aki/Jussi kirjoita tarkistakoodi
+                tulos = TarkistaTehtava10();
                 break;
             default:
                 tulos = TehtavanTila.ToteutettuToimii;
@@ -154,15 +157,73 @@ public abstract class Tarkistaja : PhysicsGame
         
     }
 
+    private TehtavanTila TarkistaTehtava4()
+    {
+        TehtavanTila tila = TehtavanTila.EiToteutettu;
+        try
+        {
+            if (objektitEnnenTehtavaa == null)
+            {
+                // Precondition
+                objektitEnnenTehtavaa = GetObjects(go => go is PhysicsObject);
+                Tehtava4();
+                // Tehtavan kutsumisen jälkeen pitää antaa JyPelille aikaa tehdä työnsä.
+                //  tähän tarkistajaan tullaan siis myöhemmin uudelleen, mutta tätä haaraa ei enää tehdä.
+                tila = TehtavanTila.ToteutettuSaattaaToimia;
+                return tila;
+            }
+
+            List<GameObject> uudet = GetObjects(go => go is PhysicsObject && !objektitEnnenTehtavaa.Contains(go));
+            talletetutObjektitTehtava4 = uudet;
+
+            tila = TehtavanTila.ToteutettuEiToimi;
+            if (uudet.Count == 0)
+            {
+                MessageDisplay.Add("Punaista palloa edustavaa pelioliota ei ole lisätty");
+            }
+            else if (uudet.Count > 1)
+            {
+                MessageDisplay.Add("Liian monta uutta pelioliota lisätty");
+            }
+            else if (uudet[0].Shape != Shape.Circle)
+            {
+                MessageDisplay.Add("Lisäämäsi pallo ei ole pyöreä");
+            }
+            else if (uudet[0].Color != Color.Red)
+            {
+                MessageDisplay.Add("Pallosi ei ole punainen");
+            }
+            else if (uudet[0].Position == new Vector(0,0))
+            {
+                MessageDisplay.Add("Pallosi on keskellä ruutua. Oletko varma, että laitoit sen satunnaiseen paikkaan? Yritäppä uudestaan!");
+            }
+            else if (uudet[0].X > 100 || uudet[0].Y > 100)
+            {
+                MessageDisplay.Add("Pallosi on liian kaukana keskipisteestä. Yritäppä uudestaan varmuuden vuoksi!");
+            }
+            else
+            {
+                tila = TehtavanTila.ToteutettuToimii;
+                objektitEnnenTehtavaa.Clear();
+                objektitEnnenTehtavaa = null;
+            }
+        }
+        catch (NotImplementedException)
+        {
+            tila = TehtavanTila.EiToteutettu;
+        }
+        return tila;
+    }
+
     private TehtavanTila TarkistaTehtava3()
     {
         TehtavanTila tila = TehtavanTila.EiToteutettu;
         try
         {
-            if (objektitEnnenTehtavaa3 == null)
+            if (objektitEnnenTehtavaa == null)
             {
                 // Precondition
-                objektitEnnenTehtavaa3 = GetObjects(go => go is PhysicsObject);
+                objektitEnnenTehtavaa = GetObjects(go => go is PhysicsObject);
                 Tehtava3();
                 // Tehtavan kutsumisen jälkeen pitää antaa JyPelille aikaa tehdä työnsä.
                 //  tähän tarkistajaan tullaan siis myöhemmin uudelleen, mutta tätä haaraa ei enää tehdä.
@@ -170,7 +231,7 @@ public abstract class Tarkistaja : PhysicsGame
                 return tila;
             }
 
-            List<GameObject> uudet = GetObjects(go => go is PhysicsObject && !objektitEnnenTehtavaa3.Contains(go));
+            List<GameObject> uudet = GetObjects(go => go is PhysicsObject && !objektitEnnenTehtavaa.Contains(go));
 
             tila = TehtavanTila.ToteutettuEiToimi;
             if (uudet.Count == 0)
@@ -192,6 +253,9 @@ public abstract class Tarkistaja : PhysicsGame
             else
             {
                 tila = TehtavanTila.ToteutettuToimii;
+                objektitEnnenTehtavaa.Clear();
+                objektitEnnenTehtavaa = null;
+                //uudet[0].Destroy();
             }
         }
         catch (NotImplementedException)
@@ -260,6 +324,190 @@ public abstract class Tarkistaja : PhysicsGame
         return tila;
     }
 
+    private TehtavanTila TarkistaTehtava5()
+    {
+        TehtavanTila tila = TehtavanTila.EiToteutettu;
+        try
+        {
+            if (objektitEnnenTehtavaa == null)
+            {
+                n = RandomGen.NextInt(100, 150);
+                // Precondition
+                objektitEnnenTehtavaa = GetObjects(go => go is PhysicsObject);
+                Tehtava5(n);
+                // Tehtavan kutsumisen jälkeen pitää antaa JyPelille aikaa tehdä työnsä.
+                //  tähän tarkistajaan tullaan siis myöhemmin uudelleen, mutta tätä haaraa ei enää tehdä.
+                tila = TehtavanTila.ToteutettuSaattaaToimia;
+                return tila;
+            }
+
+            List<GameObject> uudet = GetObjects(go => go is PhysicsObject && !objektitEnnenTehtavaa.Contains(go));
+            talletetutObjektitTehtava5 = uudet;
+
+            tila = TehtavanTila.ToteutettuEiToimi;
+            if (uudet.Count == 0)
+            {
+                MessageDisplay.Add("n-määrää palloja ei ole lisätty");
+            }
+            else if (uudet.Count > n)
+            {
+                MessageDisplay.Add("Liian monta uutta pelioliota lisätty");
+                //string virhe = String.Format("Liian monta uutta pelioliota lisätty {0}", uudet.Count);
+                //MessageDisplay.Add(virhe);
+            }
+            else if (uudet.Count < n)
+            {
+                MessageDisplay.Add("Uusia pelioliota on lisätty liian vähän");
+            }
+            else if (uudet[0].Shape != Shape.Circle)
+            {
+                MessageDisplay.Add("Lisäämäsi pallo ei ole pyöreä");
+            }
+            else if (uudet[0].Color != Color.White)
+            {
+                MessageDisplay.Add("Pallosi väri ei ole valkoinen");
+            }
+            else if (uudet[0].Position == new Vector(0, 0))
+            {
+                MessageDisplay.Add("Pallosi on keskellä ruutua. Oletko varma, että laitoit sen satunnaiseen paikkaan? Yritäppä uudestaan.");
+            }
+            else
+            {
+                tila = TehtavanTila.ToteutettuToimii;
+                objektitEnnenTehtavaa.Clear();
+                objektitEnnenTehtavaa = null;
+            }
+        }
+        catch (NotImplementedException)
+        {
+            tila = TehtavanTila.EiToteutettu;
+        }
+        return tila;
+    }
+
+    private TehtavanTila TarkistaTehtava6()
+    {
+        TehtavanTila tila = TehtavanTila.EiToteutettu;
+        try
+        {
+            tila = TehtavanTila.ToteutettuToimii;
+        }
+        catch (NotImplementedException)
+        {
+            tila = TehtavanTila.EiToteutettu;
+        }
+        return tila;
+    }
+
+    private TehtavanTila TarkistaTehtava7()
+    {
+        TehtavanTila tila = TehtavanTila.EiToteutettu;
+        try
+        {
+            PhysicsObject palloLiikkeella = null;
+            Tehtava7();
+
+            tila = TehtavanTila.ToteutettuEiToimi;
+            if (talletetutObjektitTehtava4 != null)
+            {
+                palloLiikkeella = talletetutObjektitTehtava4[0] as PhysicsObject;
+            }
+            else
+            {
+                MessageDisplay.Add("Ohjelmassa on jotakin vikaa, yritä käynnisttää se uudestaan");
+                return tila;
+            }
+
+            if (palloLiikkeella.Velocity == Vector.Zero)
+            {
+                MessageDisplay.Add("Pallo ei liiku, muistitko antaa sille iskun?");
+            }
+            else
+            {
+                tila = TehtavanTila.ToteutettuToimii;
+            }
+        }
+        catch (NotImplementedException)
+        {
+            tila = TehtavanTila.EiToteutettu;
+        }
+        return tila;
+    }
+
+    void TarkistaPallojenMaara()
+    {
+        string virhe = String.Format("joko tulee törmäyksiä {0}", talletetutObjektitTehtava5.Count);
+        MessageDisplay.Add(virhe);
+        //MessageDisplay.Add("joko tulee törmäyksiä");
+    }
+
+    private TehtavanTila TarkistaTehtava8()
+    {
+        TehtavanTila tila = TehtavanTila.EiToteutettu;
+        try
+        {
+            PhysicsObject palloLiikkeella = null;
+            Tehtava8();
+
+            Timer ajastin = new Timer();
+            ajastin.Interval = 2;
+            ajastin.Timeout += TarkistaPallojenMaara;
+            ajastin.Start(10);
+
+            tila = TehtavanTila.ToteutettuEiToimi;
+            if (talletetutObjektitTehtava4 != null)
+            {
+                palloLiikkeella = talletetutObjektitTehtava4[0] as PhysicsObject;
+            }
+            else
+            {
+                MessageDisplay.Add("Ohjelmassa on jotakin vikaa, yritä käynnisttää se uudestaan");
+                return tila;
+            }
+
+            if (palloLiikkeella.Velocity == Vector.Zero)
+            {
+                MessageDisplay.Add("Pallo ei liiku, muistitko antaa sille iskun?");
+            }
+            else
+            {
+                tila = TehtavanTila.ToteutettuToimii;
+            }
+        }
+        catch (NotImplementedException)
+        {
+            tila = TehtavanTila.EiToteutettu;
+        }
+        return tila;
+    }
+
+    private TehtavanTila TarkistaTehtava9()
+    {
+        TehtavanTila tila = TehtavanTila.EiToteutettu;
+        try
+        {
+            //tila = TehtavanTila.ToteutettuToimii;
+        }
+        catch (NotImplementedException)
+        {
+            tila = TehtavanTila.EiToteutettu;
+        }
+        return tila;
+    }
+
+    private TehtavanTila TarkistaTehtava10()
+    {
+        TehtavanTila tila = TehtavanTila.EiToteutettu;
+        try
+        {
+            //tila = TehtavanTila.ToteutettuToimii;
+        }
+        catch (NotImplementedException)
+        {
+            tila = TehtavanTila.EiToteutettu;
+        }
+        return tila;
+    }
 
     /*
      * Tehtävänanto: Palauta muuttujien a ja b summa (plus lasku)
