@@ -16,7 +16,7 @@ class Harjoitukset : Tarkistaja
     {
         // Tehtävänanto: Palauta muuttujien a ja b summa (plus lasku)
 
-        int c = 0; // TODO: Ota tehtävä pois kommenteista ja toteuta
+        int c = 0;
         c = a + b;
         return c;
     }
@@ -28,8 +28,6 @@ class Harjoitukset : Tarkistaja
         // Tehtävänanto: Palauta muuttujien z, y ja z keskiarvo
         // http://tilastokoulu.stat.fi/verkkokoulu_v2.xql?page_type=sisalto&course_id=tkoulu_tlkt&lesson_id=4&subject_id=4
 
-        // TODO: Ota tehtävä pois kommenteista ja toteuta
-
         return (x + y + z) / 3;
     }
     
@@ -37,53 +35,52 @@ class Harjoitukset : Tarkistaja
     
     public override void Tehtava3()
     {
-        // Tehtävänanto: Lisää peliin pallo 
+        // Tehtävänanto: Lisää peliin punainen pallo 
 
-        // TODO: Ota tehtävä pois kommenteista ja toteuta
-
-        PhysicsObject pallo = new PhysicsObject(40,40);
-        pallo.Shape = Shape.Circle;
-        //pallo.Color = Color.Red;
-        Add(pallo);
-    }
-    
-
-    
-    public override void Tehtava4()
-    {
-        // Tehtävänanto: Lisää PUNAINEN pallo peliin satunnaiseen paikkaan
-
-        // Tässä tehdään satunnainen paikka korkeintaan 100.0 päähän ruudun keskipisteestä
-        Vector paikka = RandomGen.NextVector(0.0, 100.0);
-
-        pallo = new PhysicsObject(40, 40);
+        pallo = new PhysicsObject(40,40);
         pallo.Shape = Shape.Circle;
         pallo.Color = Color.Red;
-        pallo.Position = paikka;
-        //pallo.Position = new Vector(200, 200);
         Add(pallo);
-
-        // TODO: Ota tehtävä pois kommenteista ja toteuta
     }
     
 
     
-    public override void Tehtava5(int n)
+    public override void Tehtava4(int n)
     {
         // Tehtävänanto: Lisää peliin n kpl satunnaisessa paikassa olevaa VALKOISTA palloa
         //   (vinkki, käytä for-silmukkaa)
 
-        for (int i = 0; i < n; i++ )
+        // Tässä tehdään satunnainen paikka korkeintaan 300.0 päähän ruudun keskipisteestä
+        for (int i = 0; i < n; i++)
         {
-            Vector paikka = RandomGen.NextVector(0.0, 500.0);
+            Vector paikka = RandomGen.NextVector(0.0, 300.0);
             valkoisetPallot = new PhysicsObject(40, 40);
             valkoisetPallot.Shape = Shape.Circle;
             valkoisetPallot.Position = paikka;
+            //valkoisetPallot.Color = Color.Green;
             valkoisetPallot.Tag = "pallo";
             Add(valkoisetPallot);
 
-            AddCollisionHandler(valkoisetPallot, "pallo", PallotTormasivat);
+            //AddCollisionHandler(valkoisetPallot, "pallo", PallotTormasivat);
         }
+    }
+    
+
+    
+    public override void Tehtava5()
+    {
+        // Tehtävänanto: Lisää peliin reunat joka puolelle
+
+        //Level.CreateBorders();
+        Level.CreateTopBorder();
+        Level.CreateBottomBorder();
+        Level.CreateLeftBorder();
+        Level.CreateRightBorder(1.0, false);
+        //Camera.ZoomToLevel();
+        //Camera.Zoom(0.5);
+        //PhysicsObject pallo = new PhysicsObject(100, 100);
+        //pallo.Shape = Shape.Circle;
+        //Add(pallo);
 
         // TODO: Ota tehtävä pois kommenteista ja toteuta
     }
@@ -92,45 +89,45 @@ class Harjoitukset : Tarkistaja
 
     public override void Tehtava6()
     {
-        // Tehtävänanto: Lisää peliin reunat joka puolelle
+        // Tehtävänanto: Lyö PUNAISELLE pallolle vauhtia satunnaiseen suuntaan
+        //  (vinkki, tee Tehtava3-aliohjelmassa lisättävästä pallosta luokkamuuttuja)
 
         // TODO: Ota tehtävä pois kommenteista ja toteuta
 
-        
-        
+        Vector isku = RandomGen.NextVector(0.0, 700.0);
+        pallo.Hit(isku);
     }
     
 
     
-    public override void Tehtava7()
+    public override void Tehtava7(List<GameObject> pallot)
     {
-        // Tehtävänanto: Lyö PUNAISELLE pallolle vauhtia satunnaiseen suuntaan
-        //  (vinkki, tee Tehtava4-aliohjelmassa lisättävästä pallosta luokkamuuttuja)
+        // Tehtävänanto: Kun kaksi VALKOISTA palloa osuu toisiinsa, pistä ne katoamaan
+        //  lisäpisteitä jos saat ne räjähtämään (kersku siitä kaverille ja opettajille :)
+        //  (vinkki, käy pallot-lista läpi for-silmukassa ja lisää törmäyskäsittelijä,
+        //  tarvitset myös uuden aliohjelman)
+
+        for (int i = 0; i < pallot.Count; i++)
+        {
+            AddCollisionHandler(pallot[i] as PhysicsObject, PallotTormasivat);
+        }
+
+        //MessageDisplay.Add("Tehtävä 7");
 
         // TODO: Ota tehtävä pois kommenteista ja toteuta
 
-        Vector isku = RandomGen.NextVector(0.0, 300.0);
-        pallo.Hit(isku);
     }
 
 
 
     public override void Tehtava8()
     {
-        // Tehtävänanto: Kun kaksi VALKOISTA palloa osuu toisiinsa, pistä ne katoamaan
-        //  lisäpisteitä jos saat ne räjähtämään (kersku siitä kaverille ja opettajille :)
-        //  (vinkki, tee uudet valkoiset pallot kutsumalla Tehtava5 aliohjelmaa,
-        //  tarvitset törmäyskäsittelijän ja myös uuden aliohjelman)
+        // Tehtävänanto: Aina kun välilyöntiä painetaan, lyö PUNAISELLE pallolle lisää vauhtia.
+        // (vinkki: uudelleenkäytä Tehtava6-aliohjelmaa kutsumalla sitä näin "Tehtava6")
 
-        Tehtava5(150);
-        AddCollisionHandler(valkoisetPallot, PallotTormasivat);
-
-        MessageDisplay.Add("Tehtävä 8");
-
+        Keyboard.Listen(Key.Space, ButtonState.Pressed, Tehtava6, "iske palloa");
+        
         // TODO: Ota tehtävä pois kommenteista ja toteuta
-
-        // ei virheitä, palauta 1
-        //return 1;
     }
     
 
