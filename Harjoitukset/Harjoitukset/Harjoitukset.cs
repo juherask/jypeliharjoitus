@@ -7,10 +7,12 @@ using Jypeli.Effects;
 using Jypeli.Widgets;
 using System.Runtime.CompilerServices;
 
+
 class Harjoitukset : Tarkistaja
 {
     PhysicsObject pallo = null;
-    PhysicsObject valkoisetPallot;
+    IntMeter laskuri = null;
+    int pallojenLkm = 100;
     
     public override int Tehtava1(int a, int b)
     {
@@ -51,10 +53,12 @@ class Harjoitukset : Tarkistaja
         //   (vinkki, käytä for-silmukkaa)
 
         // Tässä tehdään satunnainen paikka korkeintaan 300.0 päähän ruudun keskipisteestä
+        pallojenLkm = n;
+
         for (int i = 0; i < n; i++)
         {
             Vector paikka = RandomGen.NextVector(0.0, 300.0);
-            valkoisetPallot = new PhysicsObject(40, 40);
+            PhysicsObject valkoisetPallot = new PhysicsObject(40, 40);
             valkoisetPallot.Shape = Shape.Circle;
             valkoisetPallot.Position = paikka;
             //valkoisetPallot.Color = Color.Green;
@@ -71,12 +75,12 @@ class Harjoitukset : Tarkistaja
     {
         // Tehtävänanto: Lisää peliin reunat joka puolelle
 
-        //Level.CreateBorders();
-        Level.CreateTopBorder();
+        Level.CreateBorders();
+        /*Level.CreateTopBorder();
         Level.CreateBottomBorder();
         Level.CreateLeftBorder();
-        Level.CreateRightBorder(1.0, false);
-        //Camera.ZoomToLevel();
+        Level.CreateRightBorder(1.0, false);*/
+        Camera.ZoomToLevel();
         //Camera.Zoom(0.5);
         //PhysicsObject pallo = new PhysicsObject(100, 100);
         //pallo.Shape = Shape.Circle;
@@ -130,31 +134,34 @@ class Harjoitukset : Tarkistaja
         // TODO: Ota tehtävä pois kommenteista ja toteuta
     }
     
-
-
-    public override void Tehtava9()
+    public override void Tehtava9(int pallojaTallaHetkella)
     {
-        // Tehtävänanto: Aina kun välilyöntiä painetaan, lyö PUNAISELLE pallolle lisää vauhtia.
-        // (vinkki: uudelleenkäytä Tehtava7-aliohjelmaa kutsumalla sitä näin "Tehtava7();")
+        // Tehtävänanto: Lisää ruudulla näkyvä laskuri, joka pitää kirjaa siitä montako VALKOISTA
+        //  palloa on vielä pelissä.
+        // Vinkki: Tee laskurista luokkamuuttuja, jonka arvo on aluksi null (eli ei arvoa).
+        //  sen jälkeen uudelleenkäytä Tehtävän 7 törmäyskäsittelijää, jossa muuta 
+        //  laskurin arvoa VAIN JOS SE EI OLE null.
+
+        laskuri = new IntMeter(pallojaTallaHetkella);
+        Label naytto = new Label();
+        naytto.BindTo(laskuri);
+
+        Add(naytto);
 
         // TODO: Ota tehtävä pois kommenteista ja toteuta
-        
-        // ei virheitä, palauta 1
-        //return 0; 
     }
 
 
 
     public override void Tehtava10()
     {
-        // Tehtävänanto: Lisää ruudulle laskuri, joka pitää kirjaa siitä montako VALKOISTA
-        //  palloa on vielä pelissä. Kun kaikki valkoiset pallot ovat kadonneet, lisää uusi
-        //  satsi palloja käyttäen Tehtava5()-aliohjelmaa.
+        // Tehtävänanto: Kun jäljellä on enää alle puolet VALKOISISTA palloista, vaihda kentän 
+        //  taustaväri vaaleanpunaiseksi (Color.Pink).
+        // Vinkki: Kutsu tätä aliohjelmaa tehtävän 7 törmäyskäsittelijässä. Kannattaa myös käytää 
+        //  apuna tehtävän 9 laskuria.
+        
 
         // TODO: Ota tehtävä pois kommenteista ja toteuta
-        
-        // ei virheitä, palauta 1
-        //return 0; 
     }
 
 
@@ -165,6 +172,14 @@ class Harjoitukset : Tarkistaja
         {
             pallo.Destroy();
             pallo2.Destroy();
+
+            if (laskuri != null)
+            {
+                laskuri.Value = laskuri.Value - 1;
+
+                if (laskuri.Value < pallojenLkm * 0.5)
+                    Level.Background.Color = Color.Pink;
+            }
         }
     }
 }

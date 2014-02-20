@@ -24,23 +24,29 @@ public abstract class Tarkistaja : PhysicsGame
     GameObject pacman;
     GameObject haamut;
     List<GameObject> kolikot;
-    int objektienLukumaaraTehtava4 = 0;
-    int tilanTarkistusLaskuriTehtava7 = 0;
-    int tilanTarkistusLaskuriTehtava8 = 0;
 
-    PhysicsObject palloLiikkeellaTehtava8 = null;
-    Vector pallonAlkuvauhtiTehtava8 = new Vector();
 
     // Tehtävien tilatiedot
     List<GameObject> objektitEnnenTehtavaa = null;
     List<GameObject> talletetutObjektitTehtava3 = null;
     List<GameObject> talletetutObjektitTehtava4 = null;
 
+    int objektienLukumaaraTehtava4 = 0;
+    int tilanTarkistusLaskuriTehtava7 = 0;
+    int tilanTarkistusLaskuriTehtava8 = 0;
+    int tilanTarkistusLaskuriTehtava9 = 0;
+    int edellinenMaaraPallojaTehtava9 = -1;
+    int tilanTarkistusLaskuriTehtava10 = 0;
+    Color taustavariTehtava10 = Color.SkyBlue;
+
+    PhysicsObject palloLiikkeellaTehtava8 = null;
+    Vector pallonAlkuvauhtiTehtava8 = new Vector();
+
     public override void Begin()
     {
         SetWindowSize(1280, 720);
 
-        Animation pacanim = new Animation( LoadImages("pac1","pac2") );
+        Animation pacanim = new Animation(LoadImages("pac1", "pac2"));
         pacman = new GameObject(pacanim);
         pacman.X = Screen.Left + PACPADDING;
         pacman.Y = Screen.Bottom + PACPADDING;
@@ -63,14 +69,14 @@ public abstract class Tarkistaja : PhysicsGame
         {
             kolikkox += (Screen.Right - PACPADDING - pacman.X) / TEHTAVIA;
 
-            GameObject kolikko = new GameObject(40,40);
+            GameObject kolikko = new GameObject(40, 40);
             kolikko.Image = LoadImage("coin");
             kolikko.X = kolikkox;
             kolikko.Y = kolikkoy;
             kolikot.Add(kolikko);
             Add(kolikko, 1);
         }
-        
+
         Timer.SingleShot(0.33, TarkistaTehtava);
 
         PhoneBackButton.Listen(ConfirmExit, "Lopeta peli");
@@ -80,7 +86,7 @@ public abstract class Tarkistaja : PhysicsGame
     private double PoistaKolikko()
     {
         double seuraavaanTarkastukseen = 1.00;
-        if (tehtava > 0)
+        if (tehtava > 0 && tehtava<11)
         {
             if (tehtava > 1)
                 kolikot[tehtava - 2].Destroy();
@@ -125,16 +131,20 @@ public abstract class Tarkistaja : PhysicsGame
                 tulos = TarkistaTehtava8();
                 break;
             case 9:
-                //TODO: Aki/Jussi kirjoita tarkistakoodi
+                tulos = TarkistaTehtava9();
                 break;
             case 10:
-                //TODO: Aki/Jussi kirjoita tarkistakoodi
+                tulos = TarkistaTehtava10();
+
                 if (tulos == TehtavanTila.ToteutettuToimii)
                 {
                     var voitto = new GameObject(Screen.Width, Screen.Height);
                     voitto.Image = LoadImage("ikplus_diploma");
                     Add(voitto, 3);
-                    //MediaPlayer.Play("fanfare2");
+                    var naytto = GetObjects(g => g is Label).First();
+                    naytto.Destroy();
+
+                    MediaPlayer.Play("fanfare");
                 }
                 break;
             default:
@@ -147,14 +157,14 @@ public abstract class Tarkistaja : PhysicsGame
         {
             double seuraavaanTarkastukseen = PoistaKolikko();
             tehtava++;
-
-            // Try as long as it takes.
             Timer.SingleShot(seuraavaanTarkastukseen, TarkistaTehtava);
         }
         else if (tulos == TehtavanTila.ToteutettuEiToimi)
         {
             PoistaKolikko();
-            Vector ulosVasemmalta = new Vector(Screen.Left-haamut.Width/2, pacman.Y);
+
+            // Pistä haamut ajamaan Pacmaniä takaa
+            Vector ulosVasemmalta = new Vector(Screen.Left - haamut.Width / 2, pacman.Y);
             Animation peruutusAnimaatio = Animation.Mirror(new Animation(LoadImages("pac1", "pac2")));
             pacman.Animation = peruutusAnimaatio;
             pacman.Animation.FPS = 5;
@@ -164,9 +174,162 @@ public abstract class Tarkistaja : PhysicsGame
         }
         else if (tulos == TehtavanTila.ToteutettuSaattaaToimia)
         {
-            Timer.SingleShot(0.01, TarkistaTehtava);
+            Timer.SingleShot(0.02, TarkistaTehtava);
         }
-        
+
+    }
+
+    private TehtavanTila TarkistaTehtava10()
+    {
+        TehtavanTila tila = TehtavanTila.EiToteutettu;
+        try
+        {
+            tila = TehtavanTila.ToteutettuSaattaaToimia;
+            var naytto = GetObjects(g => g is Label).First();
+
+            if (tilanTarkistusLaskuriTehtava10 == 0)
+            {
+                Tehtava10();
+
+                taustavariTehtava10 = Level.Background.Color;
+
+                if (taustavariTehtava10 == Color.Pink)
+                {
+                    MessageDisplay.Add("Tehtävä10: Taustaväri on jo valmiiksi vaaleanpunainen.");
+                    tila = TehtavanTila.ToteutettuEiToimi;
+                }
+            }
+            else
+            {
+                int valkoisiaPalloja = GetObjects(g => g.Color == Color.White && g.Shape == Shape.Circle).Count;
+
+                if (valkoisiaPalloja < objektienLukumaaraTehtava4 * 0.5)
+                {
+                    if (taustavariTehtava10 != Level.Background.Color)
+                    {
+                        if (Level.Background.Color != Color.Pink)
+                        {
+                            MessageDisplay.Add("Tehtävä10: Taustaväri muuttui, mutta ei vaaleanpunaiseksi.");
+                            tila = TehtavanTila.ToteutettuEiToimi;
+                        }
+                        else
+                        {
+                            tila = TehtavanTila.ToteutettuToimii;
+                        }
+                    }
+                    else
+                    {
+                        MessageDisplay.Add("Tehtävä10: Palloja alle puolet jäljellä eikä taustaväri muuttunut (tai sitten JyPeli bugaa, kokeile uudelleen).");
+                        tila = TehtavanTila.ToteutettuEiToimi;
+                    }
+                }
+                else
+                {
+                    if (taustavariTehtava10 != Level.Background.Color)
+                    {
+                        MessageDisplay.Add("Tehtävä10: Taustaväri muuttui ennen aikojaan (tai sitten JyPeli bugaa, kokeile uudelleen).");
+                        tila = TehtavanTila.ToteutettuEiToimi;
+                    }
+                }
+            }
+
+            tilanTarkistusLaskuriTehtava10++;
+
+        }
+        catch (NotImplementedException)
+        {
+            tila = TehtavanTila.EiToteutettu;
+        }
+        return tila;
+    }
+
+
+    private TehtavanTila TarkistaTehtava9()
+    {
+        TehtavanTila tila = TehtavanTila.EiToteutettu;
+        try
+        {
+            tila = TehtavanTila.ToteutettuEiToimi;
+
+            var naytot = GetObjects(g => g is Label);
+
+            if (tilanTarkistusLaskuriTehtava9 == 0)
+            {
+                // Kutsutaan aliohjelmaa, joka lisää laskurin
+                if (naytot.Count > 0)
+                {
+                    MessageDisplay.Add("Tehtävä9: Olet lisännyt laskurin näytön liian varhain. Lisää se vasta harjoitus-aliohjelmassa.");
+                }
+                else
+                {
+                    int valkoisiaPalloja = GetObjects(g => g.Color == Color.White && g.Shape == Shape.Circle).Count;
+                    Tehtava9(valkoisiaPalloja);
+                    edellinenMaaraPallojaTehtava9 = valkoisiaPalloja;
+                    tila = TehtavanTila.ToteutettuSaattaaToimia;
+                }
+            }
+            else if (tilanTarkistusLaskuriTehtava9 == 1)
+            {
+                // Tarkistetaan, että laskurin määrä vastaa pallojen lkm
+
+                if (naytot.Count == 1)
+                {
+                    Label naytto = naytot.First() as Label;
+                    int valkoisiaPalloja = GetObjects(g => g.Color == Color.White && g.Shape == Shape.Circle).Count;
+                    int naytonPalloja = Int32.Parse(naytto.Text.Split().Last());
+
+                    if (valkoisiaPalloja != naytonPalloja && edellinenMaaraPallojaTehtava9 == naytonPalloja)
+                    {
+                        MessageDisplay.Add("Tehtävä9: Näyttö ei seuraa pallojen lukumäärää.");
+                    }
+                    else
+                    {
+                        edellinenMaaraPallojaTehtava9 = valkoisiaPalloja;
+                        tila = TehtavanTila.ToteutettuSaattaaToimia;
+                    }
+                }
+                else
+                {
+                    MessageDisplay.Add("Tehtävä9: Aliohjelma ei lisää peliin lukumäärän näyttävää näyttöä (Label).");
+                }
+            }
+            else if (tilanTarkistusLaskuriTehtava9 < 500)
+            {
+                Label naytto = naytot.First() as Label;
+                int valkoisiaPalloja = GetObjects(g => g.Color == Color.White && g.Shape == Shape.Circle).Count;
+                int naytonPalloja = Int32.Parse(naytto.Text.Split().Last());
+
+                if (edellinenMaaraPallojaTehtava9 == valkoisiaPalloja)
+                {
+                    tila = TehtavanTila.ToteutettuSaattaaToimia;
+                }
+                else
+                {
+                    if (valkoisiaPalloja == naytonPalloja)
+                    {
+                        // Meille riittää siis, että toteamme kerran arvon pienentyvän 
+                        tila = TehtavanTila.ToteutettuToimii;
+                    }
+                    else
+                    {
+                        MessageDisplay.Add("Tehtävä9: Pallojen määrä hupenee, mutta laskurinäyttö ei pienene tai näytä oikein (tai sitten JyPeli bugaa, kokeile uudestaan).");
+                    }
+                }
+            }
+            else
+            {
+                MessageDisplay.Add("Tehtävä9: Pallot eivät näytä törmäilevän, eikä laskurinäyttö siksi päivity.");
+            }
+
+            tilanTarkistusLaskuriTehtava9++;
+
+
+        }
+        catch (NotImplementedException)
+        {
+            tila = TehtavanTila.EiToteutettu;
+        }
+        return tila;
     }
 
     private TehtavanTila TarkistaTehtava8()
@@ -188,18 +351,22 @@ public abstract class Tarkistaja : PhysicsGame
                 }
                 else
                 {
-                    MessageDisplay.Add("Ohjelmassa on jotakin vikaa, yritä käynnisttää se uudestaan");
+                    MessageDisplay.Add("Tehtävä8: Ohjelmassa on jotakin vikaa, yritä käynnistää se uudestaan");
                     //return tila;
                 }
             }
             else if (palloLiikkeellaTehtava8.Velocity.Magnitude <= pallonAlkuvauhtiTehtava8.Magnitude && tilanTarkistusLaskuriTehtava8 < 500)
             {
+                if (tilanTarkistusLaskuriTehtava8 == 1)
+                {
+                    MessageDisplay.Add("Tehtävä8: Anna pallolle vauhtia painamalla VÄLILYÖNTIÄ.");
+                }
                 tilanTarkistusLaskuriTehtava8++;
                 tila = TehtavanTila.ToteutettuSaattaaToimia;
             }
             else if (tilanTarkistusLaskuriTehtava8 >= 500)
             {
-                MessageDisplay.Add("Pallo ei saanut lisää vauhtia, annoitko sille varmasti uuden iskun?");
+                MessageDisplay.Add("Tehtävä8: Pallo ei saanut lisää vauhtia, annoitko sille varmasti uuden iskun?");
             }
             else if (palloLiikkeellaTehtava8.Velocity.Magnitude > pallonAlkuvauhtiTehtava8.Magnitude)
             {
@@ -243,7 +410,7 @@ public abstract class Tarkistaja : PhysicsGame
             }
             else if (tilanTarkistusLaskuriTehtava7 >= 700)
             {
-                MessageDisplay.Add("Pallot eivät tuhoudu törmätessä tai eivät törmäile");
+                MessageDisplay.Add("Tehtävä7: Pallot eivät tuhoudu törmätessä tai eivät törmäile");
             }
             else if (objektitTormayksenJalkeen.Count < talletetutObjektitTehtava4.Count)
             {
@@ -275,13 +442,13 @@ public abstract class Tarkistaja : PhysicsGame
             }
             else
             {
-                MessageDisplay.Add("Ohjelmassa on jotakin vikaa, yritä käynnisttää se uudestaan");
+                MessageDisplay.Add("Tehtävä6: Ohjelmassa on jotakin vikaa, yritä käynnisttää se uudestaan");
                 return tila;
             }
 
             if (palloLiikkeella.Velocity == Vector.Zero)
             {
-                MessageDisplay.Add("Pallo ei liiku, annoitko sille varmasti iskun?");
+                MessageDisplay.Add("Tehtävä6: Pallo ei liiku, annoitko sille varmasti iskun?");
             }
             else
             {
@@ -316,19 +483,19 @@ public abstract class Tarkistaja : PhysicsGame
             tila = TehtavanTila.ToteutettuEiToimi;
             if (uudet.Count < 4)
             {
-                MessageDisplay.Add("Et ole lisännyt kaikkia neljää reunaa");
+                MessageDisplay.Add("Tehtävä5: Et ole lisännyt kaikkia neljää reunaa");
             }
             else if (uudet.Count > 4)
             {
-                MessageDisplay.Add("Olet lisännyt liian monta pelioliota");
+                MessageDisplay.Add("Tehtävä5: Olet lisännyt liian monta pelioliota");
             }
             else if (!TarkistaOlioidenMuoto(Shape.Rectangle, uudet))
             {
-                MessageDisplay.Add("Reunat ovat väärän muotoiset");
+                MessageDisplay.Add("Tehtävä5: Reunat ovat väärän muotoiset");
             }
             else if (!TarkistaReunat(uudet))
             {
-                MessageDisplay.Add("Reunat ovat väärän kokoiset tai väärässä paikassa");
+                MessageDisplay.Add("Tehtävä5: Reunat ovat väärän kokoiset tai väärässä paikassa");
             }
             else
             {
@@ -366,27 +533,27 @@ public abstract class Tarkistaja : PhysicsGame
             tila = TehtavanTila.ToteutettuEiToimi;
             if (talletetutObjektitTehtava4.Count < objektienLukumaaraTehtava4)
             {
-                MessageDisplay.Add("Peliolioita ei ole lisätty tarpeeksi monta");
+                MessageDisplay.Add("Tehtävä4: Peliolioita ei ole lisätty tarpeeksi monta");
             }
             else if (talletetutObjektitTehtava4.Count > objektienLukumaaraTehtava4)
             {
-                MessageDisplay.Add("Liian monta uutta pelioliota lisätty");
+                MessageDisplay.Add("Tehtävä4: Liian monta uutta pelioliota lisätty");
             }
             else if (!TarkistaOlioidenMuoto(Shape.Circle, talletetutObjektitTehtava4))
             {
-                MessageDisplay.Add("Lisäämäsi pallo ei ole pyöreä");
+                MessageDisplay.Add("Tehtävä4: Lisäämäsi pallo ei ole pyöreä");
             }
             else if (!TarkistaOlioidenVari(Color.White, talletetutObjektitTehtava4))
             {
-                MessageDisplay.Add("Pallot eivät ole valkoisia!");
+                MessageDisplay.Add("Tehtävä4: Pallot eivät ole valkoisia!");
             }
             else if (talletetutObjektitTehtava4[0].Position == new Vector(0, 0))
             {
-                MessageDisplay.Add("Pallosi on keskellä ruutua. Oletko varma, että laitoit sen satunnaiseen paikkaan? Yritä uudestaan");
+                MessageDisplay.Add("Tehtävä4: Pallosi on keskellä ruutua. Oletko varma, että laitoit sen satunnaiseen paikkaan? Yritä uudestaan");
             }
             else if (!TarkistaOlioidenEtaisyys(300, talletetutObjektitTehtava4))
             {
-                MessageDisplay.Add("Pallosi on liian kaukana keskipisteestä. Yritäppä uudestaan varmuuden vuoksi");
+                MessageDisplay.Add("Tehtävä4: Pallosi on liian kaukana keskipisteestä. Yritäppä uudestaan varmuuden vuoksi");
             }
             else
             {
@@ -424,19 +591,19 @@ public abstract class Tarkistaja : PhysicsGame
             tila = TehtavanTila.ToteutettuEiToimi;
             if (uudet.Count == 0)
             {
-                MessageDisplay.Add("Punaista palloa edustavaa pelioliota ei ole lisätty");
+                MessageDisplay.Add("Tehtävä3: Punaista palloa edustavaa pelioliota ei ole lisätty");
             }
             else if (uudet.Count > 1)
             {
-                MessageDisplay.Add("Liian monta uutta pelioliota lisätty");
+                MessageDisplay.Add("Tehtävä3: Liian monta uutta pelioliota lisätty");
             }
             else if (uudet[0].Shape != Shape.Circle)
             {
-                MessageDisplay.Add("Lisäämäsi pallo ei ole pyöreä");
+                MessageDisplay.Add("Tehtävä3: Lisäämäsi pallo ei ole pyöreä");
             }
             else if (uudet[0].Color != Color.Red)
             {
-                MessageDisplay.Add("Pallosi ei ole punainen, muistitko vaihtaa värin oikein!");
+                MessageDisplay.Add("Tehtävä3: Pallosi ei ole punainen, muistitko vaihtaa värin oikein!");
             }
             else
             {
@@ -468,7 +635,7 @@ public abstract class Tarkistaja : PhysicsGame
                 double ka = (x + y + z) / 3;
                 if (Math.Abs(ka - Tehtava2(x, y, z)) > TOLERANCE)
                 {
-                    string virhe = String.Format(@"Virhe: Koodi ei laske oikein keskiarvoa. Esim. koodi antaa
+                    string virhe = String.Format(@"Tehtävä2: Koodi ei laske oikein keskiarvoa. Esim. koodi antaa
 {0}, {1}, {2} keskiarvoksi {3} kun sen pitäisi olla {4}", x, y, z, Tehtava2(x, y, z), (x + y + z / 3));
                     MessageDisplay.Add(virhe);
 
@@ -497,11 +664,11 @@ public abstract class Tarkistaja : PhysicsGame
                 int b = RandomGen.NextInt(10);
                 if (a + b != Tehtava1(a, b))
                 {
-                    string virhe = String.Format("Virhe: Koodi ei laske oikein lukuja yhteen. Esim. {0}+{1}={2}, kun pitäisi olla {3}", a, b, Tehtava1(a, b), a + b);
+                    string virhe = String.Format("Tehtävä1: Koodi ei laske oikein lukuja yhteen. Esim. {0}+{1}={2}, kun pitäisi olla {3}", a, b, Tehtava1(a, b), a + b);
                     MessageDisplay.Add(virhe);
                     tila = TehtavanTila.ToteutettuEiToimi;
                     break;
-                }   
+                }
             }
         }
         catch (NotImplementedException)
@@ -511,7 +678,7 @@ public abstract class Tarkistaja : PhysicsGame
         return tila;
     }
 
-    bool TarkistaOlioidenMuoto(Shape muoto, List<GameObject> oliot )
+    bool TarkistaOlioidenMuoto(Shape muoto, List<GameObject> oliot)
     {
         for (int i = 0; i < oliot.Count; i++)
         {
@@ -553,8 +720,8 @@ public abstract class Tarkistaja : PhysicsGame
     bool TarkistaReunat(List<GameObject> oliot)
     {
         bool returnValue = true;
-        
-        for (int i = 0; i < oliot.Count; i++ )
+
+        for (int i = 0; i < oliot.Count; i++)
         {
             // Tarkista on vasen tai oikea reuna
             if (oliot[i].Y == 0)
@@ -565,7 +732,7 @@ public abstract class Tarkistaja : PhysicsGame
                     returnValue = false;
                 }
                 // Tarista paikka
-                else if ((Math.Abs(oliot[i].X) - (oliot[i].Height/2)) != (Level.Width/2))
+                else if ((Math.Abs(oliot[i].X) - (oliot[i].Height / 2)) != (Level.Width / 2))
                 {
                     returnValue = false;
                 }
@@ -574,12 +741,12 @@ public abstract class Tarkistaja : PhysicsGame
             else if (oliot[i].X == 0)
             {
                 // Tarkista koko
-                if (oliot[i].Width != (Level.Width+(oliot[i].Height*2)))
+                if (oliot[i].Width != (Level.Width + (oliot[i].Height * 2)))
                 {
                     returnValue = false;
                 }
                 // Tarkista paikka
-                else if ((Math.Abs(oliot[i].Y) - (oliot[i].Height/2)) != (Level.Height / 2))
+                else if ((Math.Abs(oliot[i].Y) - (oliot[i].Height / 2)) != (Level.Height / 2))
                 {
                     returnValue = false;
                 }
@@ -638,15 +805,16 @@ public abstract class Tarkistaja : PhysicsGame
     public virtual void Tehtava8() { throw new NotImplementedException(); }
 
     /*
-     * Tehtävänanto: ??
-     * (vinkki: ??)
+     * Tehtävänanto: Lisää ruudulla näkyvä laskuri, joka pitää kirjaa siitä montako VALKOISTA
+     *  palloa on vielä pelissä.
+     * Bonustehtävä:  Kun kaikki valkoiset pallot ovat kadonneet, lisää uusi
+     *  satsi palloja käyttäen Tehtava5()-aliohjelmaa.
      */
-    public virtual void Tehtava9() { throw new NotImplementedException(); }
+    public virtual void Tehtava9(int pallojaTallaHetkella) { throw new NotImplementedException(); }
 
     /*
-     * Tehtävänanto: Lisää ruudulle laskuri, joka pitää kirjaa siitä montako VALKOISTA
-     *  palloa on vielä pelissä. Kun kaikki valkoiset pallot ovat kadonneet, lisää uusi
-     *  satsi palloja käyttäen Tehtava5()-aliohjelmaa.
+     * Tehtävänanto: Kun jäljellä on enää alle puolet VALKOISISTA palloista, vaihda kentän 
+        //  taustaväri vaaleanpunaiseksi (Color.Pink).
      */
     public virtual void Tehtava10() { throw new NotImplementedException(); }
 }
