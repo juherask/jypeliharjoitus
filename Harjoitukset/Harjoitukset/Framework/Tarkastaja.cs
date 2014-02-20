@@ -20,6 +20,7 @@ public abstract class Tarkistaja : PhysicsGame
     int PACPADDING = 60;
     int PACSPEED = 333;
     int TEHTAVIA = 10;
+
     int tehtava = 0;
     GameObject pacman;
     GameObject haamut;
@@ -34,13 +35,12 @@ public abstract class Tarkistaja : PhysicsGame
     int objektienLukumaaraTehtava4 = 0;
     int tilanTarkistusLaskuriTehtava7 = 0;
     int tilanTarkistusLaskuriTehtava8 = 0;
+    PhysicsObject palloLiikkeellaTehtava8 = null;
+    Vector pallonAlkuvauhtiTehtava8 = new Vector();
     int tilanTarkistusLaskuriTehtava9 = 0;
     int edellinenMaaraPallojaTehtava9 = -1;
     int tilanTarkistusLaskuriTehtava10 = 0;
     Color taustavariTehtava10 = Color.SkyBlue;
-
-    PhysicsObject palloLiikkeellaTehtava8 = null;
-    Vector pallonAlkuvauhtiTehtava8 = new Vector();
 
     public override void Begin()
     {
@@ -807,8 +807,6 @@ public abstract class Tarkistaja : PhysicsGame
     /*
      * Tehtävänanto: Lisää ruudulla näkyvä laskuri, joka pitää kirjaa siitä montako VALKOISTA
      *  palloa on vielä pelissä.
-     * Bonustehtävä:  Kun kaikki valkoiset pallot ovat kadonneet, lisää uusi
-     *  satsi palloja käyttäen Tehtava5()-aliohjelmaa.
      */
     public virtual void Tehtava9(int pallojaTallaHetkella) { throw new NotImplementedException(); }
 
