@@ -155,6 +155,8 @@ public abstract class Tarkistaja : PhysicsGame
         // Toimi tuloksen mukaisesti
         if (tulos == TehtavanTila.ToteutettuToimii)
         {
+            if (tehtava > 0 && tehtava < 11)
+                MessageDisplay.Add(String.Format("Tehtava{0} läpi!", tehtava));
             double seuraavaanTarkastukseen = PoistaKolikko();
             tehtava++;
             Timer.SingleShot(seuraavaanTarkastukseen, TarkistaTehtava);
@@ -389,7 +391,7 @@ public abstract class Tarkistaja : PhysicsGame
             {
                 // Precondition
                 objektitEnnenTehtavaa = GetObjects(go => go is PhysicsObject);
-                Tehtava7(talletetutObjektitTehtava4);
+                Tehtava7(talletetutObjektitTehtava4.Cast<PhysicsObject>().ToList());
                 // Tehtavan kutsumisen jälkeen pitää antaa JyPelille aikaa tehdä työnsä.
                 //  tähän tarkistajaan tullaan siis myöhemmin uudelleen, mutta tätä haaraa ei enää tehdä.
                 tila = TehtavanTila.ToteutettuSaattaaToimia;
@@ -636,7 +638,7 @@ public abstract class Tarkistaja : PhysicsGame
                 if (Math.Abs(ka - Tehtava2(x, y, z)) > TOLERANCE)
                 {
                     string virhe = String.Format(@"Tehtävä2: Koodi ei laske oikein keskiarvoa. Esim. koodi antaa
-{0}, {1}, {2} keskiarvoksi {3} kun sen pitäisi olla {4}", x, y, z, Tehtava2(x, y, z), (x + y + z / 3));
+{0:F2}, {1:F2}, {2:F2} keskiarvoksi {3:F2} kun sen pitäisi olla {4:F2}", x, y, z, Tehtava2(x, y, z), (x + y + z) / 3);
                     MessageDisplay.Add(virhe);
 
                     tila = TehtavanTila.ToteutettuEiToimi;
@@ -796,7 +798,7 @@ public abstract class Tarkistaja : PhysicsGame
      *  lisäpisteitä jos saat ne räjähtämään (kersku siitä kaverille ja opettajille :)
      *  (vinkki, tarvitset törmäyskäsittelijää ja uuden aliohjelman)
      */
-    public virtual void Tehtava7(List<GameObject> pallot) { throw new NotImplementedException(); }
+    public virtual void Tehtava7(List<PhysicsObject> pallot) { throw new NotImplementedException(); }
 
     /*
      * Tehtävänanto: Aina kun välilyöntiä painetaan, lyö PUNAISELLE pallolle lisää vauhtia.

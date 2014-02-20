@@ -35,17 +35,17 @@ class Harjoitukset : Tarkistaja
     /*
     public override void Tehtava3()
     {
-        // Tehtävänanto: Lisää peliin punainen pallo 
+        // Tehtävänanto: Lisää peliin fysiikan lakeja noudattava punainen pallo 
 
         // TODO: Ota tehtävä pois kommenteista ja kirjoita toteutus tähän
     }
     */
-    
+
     /*
     public override void Tehtava4(int n)
     {
         // Tehtävänanto: Lisää peliin n kpl satunnaisessa paikassa olevaa VALKOISTA palloa
-        //   (vinkki, käytä for-silmukkaa)
+        //   jotka noudattavat fysiikan lakeja (vinkki, käytä for-silmukkaa)
 
         // Avuksi alla koodi, jolla tehdään satunnainen paikka korkeintaan 300.0 yksikön 
         /// päähän ruudun keskipisteestä
@@ -54,7 +54,7 @@ class Harjoitukset : Tarkistaja
         // TODO: Ota tehtävä pois kommenteista ja kirjoita toteutus tähän
     }
     */
-    
+
     /*
     public override void Tehtava5()
     {
@@ -75,7 +75,7 @@ class Harjoitukset : Tarkistaja
     */
     
     /*
-    public override void Tehtava7(List<GameObject> pallot)
+    public override void Tehtava7(List<PhysicsObject> pallot)
     {
         // Tehtävänanto: Kun kaksi VALKOISTA palloa osuu toisiinsa, pistä ne katoamaan
         //  lisäpisteitä jos saat ne räjähtämään (kersku siitä kaverille ja opettajille :)
@@ -90,7 +90,7 @@ class Harjoitukset : Tarkistaja
     public override void Tehtava8()
     {
         // Tehtävänanto: Aina kun välilyöntiä painetaan, lyö PUNAISELLE pallolle lisää vauhtia.
-        // (vinkki: uudelleenkäytä Tehtava6-aliohjelmaa kutsumalla sitä näin "Tehtava6")
+        // (vinkki: uudelleenkäytä Tehtava6-aliohjelmaa tapahtumakäsittelijässä)
 
         // TODO: Ota tehtävä pois kommenteista ja kirjoita toteutus tähän
     }
