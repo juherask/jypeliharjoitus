@@ -33,10 +33,12 @@ public abstract class Tarkistaja : PhysicsGame
     List<GameObject> talletetutObjektitTehtava4 = null;
 
     int objektienLukumaaraTehtava4 = 0;
+    int tilanTarkistusLaskuriTehtava6 = 0;
+    Vector pallonNopeusTehtava6 = Vector.Zero;
     int tilanTarkistusLaskuriTehtava7 = 0;
     int tilanTarkistusLaskuriTehtava8 = 0;
     PhysicsObject palloLiikkeellaTehtava8 = null;
-    Vector pallonAlkuvauhtiTehtava8 = new Vector();
+    Vector pallonAlkuvauhtiTehtava8 = Vector.Zero;
     int tilanTarkistusLaskuriTehtava9 = 0;
     int edellinenMaaraPallojaTehtava9 = -1;
     int tilanTarkistusLaskuriTehtava10 = 0;
@@ -431,13 +433,11 @@ public abstract class Tarkistaja : PhysicsGame
 
     private TehtavanTila TarkistaTehtava6()
     {
-        TehtavanTila tila = TehtavanTila.EiToteutettu;
+        TehtavanTila tila = TehtavanTila.ToteutettuEiToimi;
         try
         {
             PhysicsObject palloLiikkeella = null;
-            Tehtava6();
 
-            tila = TehtavanTila.ToteutettuEiToimi;
             if (talletetutObjektitTehtava3 != null && talletetutObjektitTehtava3.Count != 0)
             {
                 palloLiikkeella = talletetutObjektitTehtava3[0] as PhysicsObject;
@@ -448,14 +448,27 @@ public abstract class Tarkistaja : PhysicsGame
                 return tila;
             }
 
-            if (palloLiikkeella.Velocity == Vector.Zero)
+            if (tilanTarkistusLaskuriTehtava6 == 0)
             {
-                MessageDisplay.Add("Tehtävä6: Pallo ei liiku, annoitko sille varmasti iskun?");
+                pallonNopeusTehtava6 = palloLiikkeella.Velocity;
+                Tehtava6();
             }
             else
             {
-                tila = TehtavanTila.ToteutettuToimii;
+                if (palloLiikkeella.Velocity == Vector.Zero)
+                {
+                    MessageDisplay.Add("Tehtävä6: Pallo ei liiku, annoitko sille varmasti iskun?");
+                }
+                else if (palloLiikkeella.Velocity == pallonNopeusTehtava6)
+                {
+                    MessageDisplay.Add("Tehtävä6: Pallon nopeus ei muuttunut, annoitko sille varmasti iskun?");
+                }
+                else
+                {
+                    tila = TehtavanTila.ToteutettuToimii;
+                }
             }
+            tilanTarkistusLaskuriTehtava6++;
         }
         catch (NotImplementedException)
         {
