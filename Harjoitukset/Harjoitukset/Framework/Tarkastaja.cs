@@ -155,32 +155,47 @@ public abstract class Tarkistaja : PhysicsGame
         }
 
         // Toimi tuloksen mukaisesti
-        if (tulos == TehtavanTila.ToteutettuToimii)
-        {
-            if (tehtava > 0 && tehtava < 11)
-                MessageDisplay.Add(String.Format("Tehtava{0} läpi!", tehtava));
-            double seuraavaanTarkastukseen = PoistaKolikko();
-            tehtava++;
-            Timer.SingleShot(seuraavaanTarkastukseen, TarkistaTehtava);
-        }
-        else if (tulos == TehtavanTila.ToteutettuEiToimi)
-        {
-            PoistaKolikko();
+        switch (tulos)
+	    {
+		    case TehtavanTila.EiToteutettu:
+                MessageDisplay.Add(String.Format("Tee Tehtava{0}-aliohjelma kirjoittamalla sen koodi Harjoitukset.cs -tiedostoon.", tehtava));
+                break;
 
-            // Pistä haamut ajamaan Pacmaniä takaa
-            Vector ulosVasemmalta = new Vector(Screen.Left - haamut.Width / 2, pacman.Y);
-            Animation peruutusAnimaatio = Animation.Mirror(new Animation(LoadImages("pac1", "pac2")));
-            pacman.Animation = peruutusAnimaatio;
-            pacman.Animation.FPS = 5;
-            pacman.Animation.Start();
-            pacman.MoveTo(ulosVasemmalta, PACSPEED);
-            haamut.MoveTo(ulosVasemmalta, PACSPEED);
-        }
-        else if (tulos == TehtavanTila.ToteutettuSaattaaToimia)
-        {
-            Timer.SingleShot(0.02, TarkistaTehtava);
-        }
+            case TehtavanTila.ToteutettuSaattaaToimia:
+                Timer.SingleShot(0.02, TarkistaTehtava);
+                break;
 
+            case TehtavanTila.ToteutettuEiToimi:
+                PoistaKolikko();
+                HaamutEsiin();
+                break;
+
+            case TehtavanTila.ToteutettuToimii:
+                if (tehtava > 0 && tehtava < 11)
+                {
+                    MessageDisplay.Add(String.Format("Tehtava{0} läpi!", tehtava));
+                    PlaySound("smw_coin");
+                }
+                double seuraavaanTarkastukseen = PoistaKolikko();
+                tehtava++;
+                Timer.SingleShot(seuraavaanTarkastukseen, TarkistaTehtava);
+                
+                break;
+
+            default:
+                break;
+	    }
+    }
+
+    private void HaamutEsiin()
+    {
+        Vector ulosVasemmalta = new Vector(Screen.Left - haamut.Width / 2, pacman.Y);
+        Animation peruutusAnimaatio = Animation.Mirror(new Animation(LoadImages("pac1", "pac2")));
+        pacman.Animation = peruutusAnimaatio;
+        pacman.Animation.FPS = 5;
+        pacman.Animation.Start();
+        pacman.MoveTo(ulosVasemmalta, PACSPEED);
+        haamut.MoveTo(ulosVasemmalta, PACSPEED);
     }
 
     private TehtavanTila TarkistaTehtava10()
@@ -452,6 +467,7 @@ public abstract class Tarkistaja : PhysicsGame
             {
                 pallonNopeusTehtava6 = palloLiikkeella.Velocity;
                 Tehtava6();
+                tila = TehtavanTila.ToteutettuSaattaaToimia;
             }
             else
             {
