@@ -3,7 +3,7 @@
 
 ## Kuvaus ##
 
-Itsenäisesti tehtäviä harjoituksia jypelin ja C#-kielen käyttöön. Toteuta 10 Tehtava-aliohjelmaa ja pistä Pacman syömään kolikkonsa.
+Itsenäisesti tehtäviä harjoituksia jypelin ja C#-kielen käyttöön. Toteuta 10 `Tehtava`-aliohjelmaa ja pistä Pacman syömään kolikkonsa.
 
 ## Käyttöohje ##
 
@@ -26,27 +26,27 @@ https://trac.cc.jyu.fi/projects/npo/wiki/ApujaOhjelmointiin
 
 Ohessa ylläolevilta sivuilta poimittuja tehtäväkohtaisia ohjesivuja:
 
-*   *Tehtava1* ja *Tehtava2*:
+*   **Tehtava1** ja **Tehtava2**:
     
 	https://trac.cc.jyu.fi/projects/npo/wiki/Muuttujat
 	
-*   *Tehtava3*:
+*   **Tehtava3**:
 
     https://trac.cc.jyu.fi/projects/npo/wiki/OlionLisaaminen
 	
     https://trac.cc.jyu.fi/projects/npo/wiki/OlionUlkonako
 	
-*   *Tehtava4*:
+*   **Tehtava4**:
     
     https://trac.cc.jyu.fi/projects/npo/wiki/Silmukat#a2.For-silmukka
 	
     https://trac.cc.jyu.fi/projects/npo/wiki/Satunnaisluvut
 	
-*   *Tehtava5*:
+*   **Tehtava5**:
 	
     https://trac.cc.jyu.fi/projects/npo/wiki/MaastonTekeminen#Useidenreunojenluominenyhdellärivillä	
 	
-*   *Tehtava6*:
+*   **Tehtava6**:
 
     https://trac.cc.jyu.fi/projects/npo/wiki/OlioidenLiikuttaminen#a4.Hit
 	
@@ -54,26 +54,27 @@ Ohessa ylläolevilta sivuilta poimittuja tehtäväkohtaisia ohjesivuja:
 	
 	https://trac.cc.jyu.fi/projects/npo/wiki/Satunnaisluvut
 	
-*   *Tehtava7*:
+*   **Tehtava7**:
 
     https://trac.cc.jyu.fi/projects/npo/wiki/TormaysTarkistukset#Törmäyksenkäsittelyyhdelletunnetulleoliolle
 	
 	https://trac.cc.jyu.fi/projects/npo/wiki/Silmukat#a2.For-silmukka
 	
 	https://trac.cc.jyu.fi/projects/npo/wiki/Tietorakenteet#a2.Listat
+	
 	(katso erityisesti esimerkki ihan sivun lopusta)
 	
-*   *Tehtava8*:
+*   **Tehtava8**:
 
     https://trac.cc.jyu.fi/projects/npo/wiki/OhjaintenLisays#yleisesti
 	
-*   *Tehtava9*:
+*   **Tehtava9**:
 
     https://trac.cc.jyu.fi/projects/npo/wiki/PistelaskurinTekeminen
 	
 	https://trac.cc.jyu.fi/projects/npo/wiki/MuuttujaAttribuutiksi
 	
-*   *Tehtava10*:
+*   **Tehtava10**:
 
     https://trac.cc.jyu.fi/projects/npo/wiki/Ehtolauseet
 	
