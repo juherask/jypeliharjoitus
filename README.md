@@ -8,7 +8,7 @@ Itsenäisesti tehtäviä harjoituksia jypelin ja C#-kielen käyttöön. Toteuta 
 ## Käyttöohje ##
 
 1.  Lataa tämä säiliö (reposotory) zip-pakettina omalle koneellesi. Latauspainike on tämän Github-sivun oikeassa laidassa hieman tätä riviä ylempänä.
-2.  Pura `.zip`-paketti ja avaa puretusta kansiosta Visual C#:n solution tiedosto `Harjoitus.sln`.
+2.  Pura `.zip`-paketti ja avaa puretusta kansiosta Visual C#:n solution tiedosto `Harjoitukset.sln`.
 3.  Avaa `Harjoitus.cs` tiedosto muokattavaksi.
 4.  Etsi ensimmäisen tehtävän aliohjelma `Tehtava1(){...}`
 5.  Ota `Tehtava1`-aliohjelma pois kommenteista poistamalla lohkokommenttirivit `/*` ja `*/` aliohjelman ympäriltä.
